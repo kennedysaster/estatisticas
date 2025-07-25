@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Tickets - Sistema MPU/MPS/MRS/MDS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow: hidden;
+        }
+        
+        .slide {
+            display: none;
+            padding: 40px;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+        
+        h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: #f0f8ff;
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+            max-width: 800px;
+        }
+        
+        .legend-item {
+            background: rgba(255,255,255,0.15);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 2rem 0;
+            max-width: 1000px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .chart-container {
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1rem 0;
+            max-width: 900px;
+        }
+        
+        .bar-chart {
+            display: flex;
+            align-items: end;
+            height: 200px;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .bar-fill {
+            width: 80px;
+            background: linear-gradient(to top, #4ecdc4, #45b7d1);
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: end;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            padding: 8px;
+            font-size: 14px;
+        }
+        
+        .insights-list {
+            text-align: left;
+            max-width: 900px;
+            margin: 1rem 0;
+        }
+        
+        .insight-item {
+            background: rgba(255,255,255,0.1);
+            margin: 0.5rem 0;
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #ffd700;
+        }
+        
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            z-index: 1000;
+        }
+        
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .slide-number {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .tickets-summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin: 1rem 0;
+            max-width: 1000px;
+        }
+        
+        .sprint-card {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .level-alto { color: #ff6b6b; }
+        .level-medio { color: #4ecdc4; }
+        .level-baixo { color: #45b7d1; }
+    </style>
+</head>
+<body>
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">7</span>
+    </div>
+
+    <!-- Slide 1: Título -->
+    <div class="slide active">
+        <h1>📊 Análise de Tickets</h1>
+        <h2>Sistema MPU/MPS/MRS/MDS</h2>
+        <p style="font-size: 1.2rem; margin-top: 2rem; opacity: 0.9;">
+            Análise completa de 17 tickets distribuídos entre Sprint 182 e Sprint 183
+        </p>
+        <div style="margin-top: 3rem; font-size: 1rem; opacity: 0.7;">
+            Use as setas ou clique nos botões para navegar
+        </div>
+    </div>
+
+    <!-- Slide 2: Legenda dos Componentes -->
+    <div class="slide">
+        <h2>🏷️ Legenda dos Componentes</h2>
+        <div class="legend">
+            <div class="legend-item">
+                <h3>MPU</h3>
+                <p>Melhora a Vida para o Usuário</p>
+            </div>
+            <div class="legend-item">
+                <h3>MPS</h3>
+                <p>Melhora a Vida para o Suporte</p>
+            </div>
+            <div class="legend-item">
+                <h3>MRS</h3>
+                <p>Melhora Reduz Suporte</p>
+            </div>
+            <div class="legend-item">
+                <h3>MDS</h3>
+                <p>Melhora o Desempenho do Sistema</p>
+            </div>
+        </div>
+        <p style="margin-top: 2rem; font-size: 1.1rem; opacity: 0.8;">
+            Cada componente é avaliado em três níveis: <span class="level-alto">ALTO</span>, 
+            <span class="level-medio">MÉDIO</span> e <span class="level-baixo">BAIXO</span>
+        </p>
+    </div>
+
+    <!-- Slide 3: Visão Geral dos Tickets -->
+    <div class="slide">
+        <h2>📈 Visão Geral</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">17</div>
+                <h3>Total de Tickets</h3>
+                <p>Analisados no período</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2</div>
+                <h3>Sprints</h3>
+                <p>Sprint 182 e Sprint 183</p>
+            </div>
+        </div>
+        <div class="tickets-summary">
+            <div class="sprint-card">
+                <h3>Sprint 182</h3>
+                <div class="stat-number" style="font-size: 2rem;">8</div>
+                <p>Tickets focados em validações e filtros</p>
+            </div>
+            <div class="sprint-card">
+                <h3>Sprint 183</h3>
+                <div class="stat-number" style="font-size: 2rem;">9</div>
+                <p>Tickets com melhorias sistêmicas</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Taxa de Ativação por Componente -->
+    <div class="slide">
+        <h2>📊 Taxa de Ativação por Componente</h2>
+        <div class="chart-container">
+            <div class="bar-chart">
+                <div class="bar">
+                    <div class="bar-fill" style="height: 141px;">70,6%</div>
+                    <div>MPU</div>
+                </div>
+                <div class="bar">
+                    <div class="bar-fill" style="height: 141px;">70,6%</div>
+                    <div>MPS</div>
+                </div>
+                <div class="bar">
+                    <div class="bar-fill" style="height: 94px;">47,1%</div>
+                    <div>MDS</div>
+                </div>
+                <div class="bar">
+                    <div class="bar-fill" style="height: 82px;">41,2%</div>
+                    <div>MRS</div>
+                </div>
+            </div>
+        </div>
+        <p style="margin-top: 2rem; font-size: 1.1rem;">
+            <strong>MPU</strong> e <strong>MPS</strong> lideram com mesma taxa de ativação, 
+            indicando forte correlação entre melhoria do usuário e facilitação do suporte
+        </p>
+    </div>
+
+    <!-- Slide 5: Distribuição por Níveis -->
+    <div class="slide">
+        <h2>📈 Distribuição por Níveis de Severidade</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number level-alto">27,9%</div>
+                <h3>Nível ALTO</h3>
+                <p>19 ocorrências</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number level-medio">32,4%</div>
+                <h3>Nível MÉDIO</h3>
+                <p>22 ocorrências</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number level-baixo">39,7%</div>
+                <h3>Nível BAIXO</h3>
+                <p>27 ocorrências</p>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">68</div>
+                <h3>Total de Avaliações</h3>
+                <p>17 tickets × 4 componentes</p>
+            </div>
+        </div>
+        <p style="margin-top: 1rem; font-size: 1.1rem;">
+            Predominância de melhorias <span class="level-baixo">incrementais</span> (39,7% nível BAIXO)
+        </p>
+    </div>
+
+    <!-- Slide 6: Tickets de Alto Impacto -->
+    <div class="slide">
+        <h2>🎯 Tickets com Maior Impacto</h2>
+        <div class="insights-list">
+            <div class="insight-item">
+                <h3>Triplo ALTO - Impacto Máximo</h3>
+                <p><strong>493415:</strong> MPU(ALTO) + MPS(ALTO) + MRS(ALTO)</p>
+                <p><strong>493949:</strong> MPU(ALTO) + MPS(ALTO) + MRS(ALTO)</p>
+            </div>
+            <div class="insight-item">
+                <h3>Duplo ALTO - Alto Impacto</h3>
+                <p><strong>494931:</strong> MPU(ALTO) + MDS(ALTO)</p>
+                <p><strong>494276:</strong> MPU(ALTO) + MDS(ALTO)</p>
+                <p><strong>494060:</strong> MPU(ALTO) + MDS(ALTO)</p>
+            </div>
+        </div>
+        <p style="margin-top: 2rem; font-size: 1.1rem;">
+            Padrão identificado: <strong>MPU ALTO</strong> frequentemente coincide com outros componentes em nível ALTO
+        </p>
+    </div>
+
+    <!-- Slide 7: Insights e Conclusões -->
+    <div class="slide">
+        <h2>💡 Principais Insights</h2>
+        <div class="insights-list">
+            <div class="insight-item">
+                <strong>Correlação MPU-MPS:</strong> Taxa idêntica (70,6%) indica sinergia entre experiência do usuário e facilitação do suporte
+            </div>
+            <div class="insight-item">
+                <strong>MRS Independente:</strong> Menor ativação (41,2%) mostra que nem toda melhoria reduz demanda de suporte
+            </div>
+            <div class="insight-item">
+                <strong>Melhorias Incrementais:</strong> 39,7% dos casos em nível BAIXO indicam foco em pequenas otimizações
+            </div>
+            <div class="insight-item">
+                <strong>Padrão Sprint 182:</strong> Tickets 493415 e 493949 únicos com triplo ALTO sem afetar MDS
+            </div>
+            <div class="insight-item">
+                <strong>Impacto Sistêmico:</strong> MPU em nível ALTO geralmente coincide com melhorias em outros componentes
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()">← Anterior</button>
+        <button class="nav-btn" onclick="nextSlide()">Próximo →</button>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+        
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            document.getElementById('currentSlide').textContent = index + 1;
+        }
+        
+        function nextSlide() {
+            currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
+            showSlide(currentSlideIndex);
+        }
+        
+        function previousSlide() {
+            currentSlideIndex = (currentSlideIndex - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlideIndex);
+        }
+        
+        // Navegação por teclado
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                nextSlide();
+            } else if (event.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+        
+        // Navegação por clique
+        document.addEventListener('click', function(event) {
+            if (!event.target.classList.contains('nav-btn')) {
+                nextSlide();
+            }
+        });
+    </script>
+</body>
+</html>
