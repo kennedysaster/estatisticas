@@ -3,416 +3,557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análise de Tickets - Sistema MPU/MPS/MRS/MDS</title>
+    <title>Melhorias no sitema CENTI</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            overflow: hidden;
+            color: #333;
+            overflow-x: hidden;
         }
-        
+
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
         .slide {
-            display: none;
-            padding: 40px;
-            height: 100vh;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background: rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.8s ease forwards;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
-        .slide.active {
+
+        .slide:nth-child(even) {
+            animation-delay: 0.2s;
+        }
+
+        .slide:nth-child(odd) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .title-slide {
+            text-align: center;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            min-height: 400px;
             display: flex;
             flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
         }
-        
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 2rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+
+        .title-slide::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
         }
-        
-        h2 {
-            font-size: 2.2rem;
-            margin-bottom: 1.5rem;
-            color: #fff;
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
-        
-        h3 {
-            font-size: 1.6rem;
-            margin-bottom: 1rem;
-            color: #f0f8ff;
+
+        .title-slide h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            position: relative;
         }
-        
-        .legend {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            margin: 2rem 0;
-            max-width: 800px;
+
+        .title-slide p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            z-index: 1;
+            position: relative;
         }
-        
-        .legend-item {
-            background: rgba(255,255,255,0.15);
-            padding: 1.5rem;
+
+        .module-header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            text-align: center;
+            padding: 30px;
             border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.3);
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .module-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .module-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .ticket-card {
+            background: white;
+            border-left: 5px solid #4facfe;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            border-left-width: 8px;
+        }
+
+        .ticket-number {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .ticket-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .improvement-section {
+            margin: 20px 0;
+        }
+
+        .improvement-label {
+            background: #27ae60;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .before, .after {
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .before {
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            border-left: 4px solid #e74c3c;
+        }
+
+        .after {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            border-left: 4px solid #27ae60;
+        }
+
+        .before h4, .after h4 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .summary-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            margin: 2rem 0;
-            max-width: 1000px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
         }
-        
-        .stat-card {
-            background: rgba(255,255,255,0.15);
-            padding: 2rem;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.3);
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .stat-number {
             font-size: 2.5rem;
             font-weight: bold;
-            color: #ffd700;
-            margin-bottom: 0.5rem;
+            display: block;
+            margin-bottom: 10px;
         }
-        
-        .chart-container {
-            background: rgba(255,255,255,0.15);
-            border-radius: 20px;
-            padding: 2rem;
-            margin: 1rem 0;
-            max-width: 900px;
-        }
-        
-        .bar-chart {
-            display: flex;
-            align-items: end;
-            height: 200px;
-            gap: 2rem;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-        
-        .bar {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .bar-fill {
-            width: 80px;
-            background: linear-gradient(to top, #4ecdc4, #45b7d1);
-            border-radius: 8px 8px 0 0;
-            display: flex;
-            align-items: end;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            padding: 8px;
-            font-size: 14px;
-        }
-        
-        .insights-list {
-            text-align: left;
-            max-width: 900px;
-            margin: 1rem 0;
-        }
-        
-        .insight-item {
-            background: rgba(255,255,255,0.1);
-            margin: 0.5rem 0;
-            padding: 1rem;
-            border-radius: 10px;
-            border-left: 4px solid #ffd700;
-        }
-        
+
         .navigation {
             position: fixed;
             bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
+            right: 30px;
             display: flex;
-            gap: 1rem;
+            gap: 10px;
             z-index: 1000;
         }
-        
+
         .nav-btn {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
             color: white;
-            padding: 10px 20px;
+            border: none;
+            padding: 12px 20px;
             border-radius: 25px;
             cursor: pointer;
-            transition: all 0.3s;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
         }
-        
+
         .nav-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
         }
-        
-        .slide-number {
+
+        .progress-bar {
             position: fixed;
-            top: 30px;
-            right: 30px;
-            background: rgba(0,0,0,0.3);
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-size: 14px;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            transition: width 0.3s ease;
+            z-index: 1001;
         }
-        
-        .tickets-summary {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-            margin: 1rem 0;
-            max-width: 1000px;
+
+        @media (max-width: 768px) {
+            .before-after {
+                grid-template-columns: 1fr;
+            }
+            
+            .title-slide h1 {
+                font-size: 2.5rem;
+            }
+            
+            .module-header h2 {
+                font-size: 2rem;
+            }
+            
+            .presentation-container {
+                padding: 10px;
+            }
+            
+            .slide {
+                padding: 20px;
+            }
         }
-        
-        .sprint-card {
-            background: rgba(255,255,255,0.1);
-            padding: 1.5rem;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .level-alto { color: #ff6b6b; }
-        .level-medio { color: #4ecdc4; }
-        .level-baixo { color: #45b7d1; }
     </style>
 </head>
 <body>
-    <div class="slide-number">
-        <span id="currentSlide">1</span> / <span id="totalSlides">7</span>
-    </div>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="presentation-container">
+        <!-- Slide de Título -->
+        <div class="slide title-slide">
+            <h1>Implementações e Atualizações - Sprint 183</h1>
+            <h1>Empresa - CENTI SOLUÇÕES</h1>
+            <h1>Produto : SOFTWARE GESTÃO PÚBLICA</h1>
+            </div>
 
-    <!-- Slide 1: Título -->
-    <div class="slide active">
-        <h1>📊 Análise de Tickets</h1>
-        <h2>Sistema MPU/MPS/MRS/MDS</h2>
-        <p style="font-size: 1.2rem; margin-top: 2rem; opacity: 0.9;">
-            Análise completa de 17 tickets distribuídos entre Sprint 182 e Sprint 183
-        </p>
-        <div style="margin-top: 3rem; font-size: 1rem; opacity: 0.7;">
-            Use as setas ou clique nos botões para navegar
+        <!-- Módulo Compras -->
+        <div class="module-header">
+            <h2>MÓDULO: COMPRAS</h2>
         </div>
-    </div>
 
-    <!-- Slide 2: Legenda dos Componentes -->
-    <div class="slide">
-        <h2>🏷️ Legenda dos Componentes</h2>
-        <div class="legend">
-            <div class="legend-item">
-                <h3>MPU</h3>
-                <p>Melhora a Vida para o Usuário</p>
-            </div>
-            <div class="legend-item">
-                <h3>MPS</h3>
-                <p>Melhora a Vida para o Suporte</p>
-            </div>
-            <div class="legend-item">
-                <h3>MRS</h3>
-                <p>Melhora Reduz Suporte</p>
-            </div>
-            <div class="legend-item">
-                <h3>MDS</h3>
-                <p>Melhora o Desempenho do Sistema</p>
-            </div>
-        </div>
-        <p style="margin-top: 2rem; font-size: 1.1rem; opacity: 0.8;">
-            Cada componente é avaliado em três níveis: <span class="level-alto">ALTO</span>, 
-            <span class="level-medio">MÉDIO</span> e <span class="level-baixo">BAIXO</span>
-        </p>
-    </div>
-
-    <!-- Slide 3: Visão Geral dos Tickets -->
-    <div class="slide">
-        <h2>📈 Visão Geral</h2>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number">17</div>
-                <h3>Total de Tickets</h3>
-                <p>Analisados no período</p>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">2</div>
-                <h3>Sprints</h3>
-                <p>Sprint 182 e Sprint 183</p>
-            </div>
-        </div>
-        <div class="tickets-summary">
-            <div class="sprint-card">
-                <h3>Sprint 182</h3>
-                <div class="stat-number" style="font-size: 2rem;">8</div>
-                <p>Tickets focados em validações e filtros</p>
-            </div>
-            <div class="sprint-card">
-                <h3>Sprint 183</h3>
-                <div class="stat-number" style="font-size: 2rem;">9</div>
-                <p>Tickets com melhorias sistêmicas</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 4: Taxa de Ativação por Componente -->
-    <div class="slide">
-        <h2>📊 Taxa de Ativação por Componente</h2>
-        <div class="chart-container">
-            <div class="bar-chart">
-                <div class="bar">
-                    <div class="bar-fill" style="height: 141px;">70,6%</div>
-                    <div>MPU</div>
+        <div class="slide">
+            <div class="ticket-card">
+                <div class="ticket-number">Tickets 494757, 494060</div>
+                <div class="ticket-title">IMPORTAÇÃO DE PEDIDO e IMPORTAÇÃO COMPRAS</div>
+                
+                <div class="improvement-section">
+                    <div class="improvement-label">SOLICITAÇÃO</div>
+                    <p>Melhoria na leitura da planilha para percorrer todos os itens e mencionar todos em duplicidade.</p>
                 </div>
-                <div class="bar">
-                    <div class="bar-fill" style="height: 141px;">70,6%</div>
-                    <div>MPS</div>
-                </div>
-                <div class="bar">
-                    <div class="bar-fill" style="height: 94px;">47,1%</div>
-                    <div>MDS</div>
-                </div>
-                <div class="bar">
-                    <div class="bar-fill" style="height: 82px;">41,2%</div>
-                    <div>MRS</div>
+
+                <div class="before-after">
+                    <div class="before">
+                        <h4>❌ Comportamento Anterior</h4>
+                        <p>Sistema bloqueia a importação ao encontrar primeiro produto repetido. Usuário precisa corrigir e reenviar a planilha múltiplas vezes.</p>
+                    </div>
+                    <div class="after">
+                        <h4>✅ Após Melhoria</h4>
+                        <p>Sistema percorre toda a planilha, encontra todos os itens duplicados e gera relatório completo com linhas onde foram encontradas as duplicidades.</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <p style="margin-top: 2rem; font-size: 1.1rem;">
-            <strong>MPU</strong> e <strong>MPS</strong> lideram com mesma taxa de ativação, 
-            indicando forte correlação entre melhoria do usuário e facilitação do suporte
-        </p>
-    </div>
 
-    <!-- Slide 5: Distribuição por Níveis -->
-    <div class="slide">
-        <h2>📈 Distribuição por Níveis de Severidade</h2>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number level-alto">27,9%</div>
-                <h3>Nível ALTO</h3>
-                <p>19 ocorrências</p>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number level-medio">32,4%</div>
-                <h3>Nível MÉDIO</h3>
-                <p>22 ocorrências</p>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number level-baixo">39,7%</div>
-                <h3>Nível BAIXO</h3>
-                <p>27 ocorrências</p>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">68</div>
-                <h3>Total de Avaliações</h3>
-                <p>17 tickets × 4 componentes</p>
+        <div class="slide">
+            <div class="ticket-card">
+                <div class="ticket-number">Ticket 494136</div>
+                <div class="ticket-title">CM 024 - EMPENHAR E LIQUIDAR ORDEM DE FORNECIMENTO</div>
+                
+                <div class="improvement-section">
+                    <div class="improvement-label">MELHORIAS IMPLEMENTADAS</div>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>Alteração do campo "NOTA FISCAL" para "DOCUMENTO FISCAL"</li>
+                        <li>Melhoria na mensagem de erro para campos não preenchidos</li>
+                    </ul>
+                </div>
+
+                <div class="before-after">
+                    <div class="before">
+                        <h4>❌ Antes da Melhoria</h4>
+                        <p>Campo "NOTA FISCAL" e mensagem genérica de erro.</p>
+                    </div>
+                    <div class="after">
+                        <h4>✅ Após Melhoria</h4>
+                        <p>Campo "DOCUMENTO FISCAL" e mensagem clara: "O campo Documento Fiscal está sem preenchimento. Informe um documento válido ou cadastre-o."</p>
+                    </div>
+                </div>
             </div>
         </div>
-        <p style="margin-top: 1rem; font-size: 1.1rem;">
-            Predominância de melhorias <span class="level-baixo">incrementais</span> (39,7% nível BAIXO)
-        </p>
-    </div>
 
-    <!-- Slide 6: Tickets de Alto Impacto -->
-    <div class="slide">
-        <h2>🎯 Tickets com Maior Impacto</h2>
-        <div class="insights-list">
-            <div class="insight-item">
-                <h3>Triplo ALTO - Impacto Máximo</h3>
-                <p><strong>493415:</strong> MPU(ALTO) + MPS(ALTO) + MRS(ALTO)</p>
-                <p><strong>493949:</strong> MPU(ALTO) + MPS(ALTO) + MRS(ALTO)</p>
-            </div>
-            <div class="insight-item">
-                <h3>Duplo ALTO - Alto Impacto</h3>
-                <p><strong>494931:</strong> MPU(ALTO) + MDS(ALTO)</p>
-                <p><strong>494276:</strong> MPU(ALTO) + MDS(ALTO)</p>
-                <p><strong>494060:</strong> MPU(ALTO) + MDS(ALTO)</p>
+        <!-- Módulo Folha de Pagamento -->
+        <div class="module-header">
+            <h2>MÓDULO: FOLHA DE PAGAMENTO</h2>
+        </div>
+
+        <div class="slide">
+            <div class="ticket-card">
+                <div class="ticket-number">Ticket 491724</div>
+                <div class="ticket-title">Número de Benefício nas telas FP001 e FP051</div>
+                
+                <div class="improvement-section">
+                    <div class="improvement-label">FUNCIONALIDADES ADICIONADAS</div>
+                    <p><strong>Tela FP001 - FUNCIONÁRIO:</strong><br>
+                    Nova opção de pesquisa por "Nr. benefício" para dados de aposentadoria ou pensão.</p>
+                    
+                    <p style="margin-top: 15px;"><strong>Tela FP051 - CUBO FUNCIONÁRIO:</strong><br>
+                    Nova coluna "NR.BENEFÍCIO" adicionada.</p>
+                </div>
             </div>
         </div>
-        <p style="margin-top: 2rem; font-size: 1.1rem;">
-            Padrão identificado: <strong>MPU ALTO</strong> frequentemente coincide com outros componentes em nível ALTO
-        </p>
-    </div>
 
-    <!-- Slide 7: Insights e Conclusões -->
-    <div class="slide">
-        <h2>💡 Principais Insights</h2>
-        <div class="insights-list">
-            <div class="insight-item">
-                <strong>Correlação MPU-MPS:</strong> Taxa idêntica (70,6%) indica sinergia entre experiência do usuário e facilitação do suporte
+        <div class="slide">
+            <div class="ticket-card">
+                <div class="ticket-number">Ticket 494931</div>
+                <div class="ticket-title">Validação XML S-2200 CBO CARGO</div>
+                
+                <div class="improvement-section">
+                    <div class="improvement-label">INTEGRAÇÃO E-SOCIAL</div>
+                    <p>PC027 - Tratativa para geração do evento S-2200, garantindo que as tags &lt;CBOCargo&gt; e &lt;CBOFuncao&gt; contenham apenas valores numéricos.</p>
+                </div>
+
+                <div class="before-after">
+                    <div class="before">
+                        <h4>❌ Problema Anterior</h4>
+                        <p>XML gerado com caracteres ou espaços no CBO, causando erros na integração.</p>
+                    </div>
+                    <div class="after">
+                        <h4>✅ Solução Implementada</h4>
+                        <p>Sistema automaticamente limpa e converte o conteúdo para numérico na tag &lt;cbocargo&gt;.</p>
+                    </div>
+                </div>
             </div>
-            <div class="insight-item">
-                <strong>MRS Independente:</strong> Menor ativação (41,2%) mostra que nem toda melhoria reduz demanda de suporte
+        </div>
+
+        <!-- Módulo Geral -->
+        <div class="module-header">
+            <h2>MÓDULO: GERAL</h2>
+        </div>
+
+        <div class="slide">
+            <div class="ticket-card">
+                <div class="ticket-number">Ticket 494048</div>
+                <div class="ticket-title">Validação de Email - Pessoa Física e Jurídica</div>
+                
+                <div class="improvement-section">
+                    <div class="improvement-label">VALIDAÇÃO IMPLEMENTADA</div>
+                    <p>DM017 - PESSOA FÍSICA e DM016 - PESSOA JURÍDICA: Campo E-MAIL agora só aceita formato válido (usuario@dominio.com).</p>
+                </div>
+
+                <div class="before-after">
+                    <div class="before">
+                        <h4>❌ Comportamento Anterior</h4>
+                        <p>Sistema permitia salvar emails sem padrão definido.</p>
+                    </div>
+                    <div class="after">
+                        <h4>✅ Nova Validação</h4>
+                        <p>Sistema valida o email no salvamento. Se estiver fora do padrão, exibe mensagem e bloqueia o salvamento até correção.</p>
+                    </div>
+                </div>
             </div>
-            <div class="insight-item">
-                <strong>Melhorias Incrementais:</strong> 39,7% dos casos em nível BAIXO indicam foco em pequenas otimizações
+        </div>
+
+        <div class="slide">
+            <div class="ticket-card">
+                <div class="ticket-number">Sem Número</div>
+                <div class="ticket-title">Validação Email - Portal do Usuário</div>
+                
+                <div class="improvement-section">
+                    <div class="improvement-label">CORREÇÃO DE BUG</div>
+                    <p>PR001 - USUARIO PORTAL: Validação do email na operação "Re-enviar senha".</p>
+                </div>
+
+                <div class="before-after">
+                    <div class="before">
+                        <h4>❌ Erro Identificado</h4>
+                        <p>Sistema apresentava "ERRO INESPERADO NO SERVIDOR" ao tentar reenviar senha com email inválido.</p>
+                    </div>
+                    <div class="after">
+                        <h4>✅ Correção Aplicada</h4>
+                        <p>Sistema valida formato do email e apresenta mensagem clara: "O e-mail informado é inválido. Por favor, insira um endereço válido no formato: usuario@dominio.com"</p>
+                    </div>
+                </div>
             </div>
-            <div class="insight-item">
-                <strong>Padrão Sprint 182:</strong> Tickets 493415 e 493949 únicos com triplo ALTO sem afetar MDS
+        </div>
+
+        <!-- Módulo Protocolo -->
+        <div class="module-header">
+            <h2>MÓDULO: PROTOCOLO</h2>
+        </div>
+
+        <div class="slide">
+            <div class="ticket-card">
+                <div class="ticket-number">Ticket 494425</div>
+                <div class="ticket-title">Validação de Repartição do Usuário</div>
+                
+                <div class="improvement-section">
+                    <div class="improvement-label">MELHORIAS NAS MENSAGENS</div>
+                    
+                    <p><strong>Melhoria 1:</strong> Mensagem mais clara quando usuário não possui repartição principal configurada.</p>
+                    
+                    <p style="margin-top: 15px;"><strong>Melhoria 2:</strong> Mensagem específica informando qual repartição não possui permissão para protocolar.</p>
+                </div>
+
+                <div class="before-after">
+                    <div class="before">
+                        <h4>❌ Mensagens Antigas</h4>
+                        <p>"Não foi possível encontrar o departamento de protocolo do usuário"<br><br>
+                        "Você não tem permissão para cadastrar um novo protocolo."</p>
+                    </div>
+                    <div class="after">
+                        <h4>✅ Mensagens Melhoradas</h4>
+                        <p>"Repartição principal não configurada! É necessário ter pelo menos uma 'Repartição Principal' marcada como Sim para o usuário"<br><br>
+                        Sistema identifica especificamente qual repartição precisa ser configurada.</p>
+                    </div>
+                </div>
             </div>
-            <div class="insight-item">
-                <strong>Impacto Sistêmico:</strong> MPU em nível ALTO geralmente coincide com melhorias em outros componentes
+        </div>
+
+        <!-- Slide de Resumo -->
+        <div class="slide summary-slide">
+            <h2>Resumo das Melhorias</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">8</span>
+                    <span>Tickets Implementados</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">5</span>
+                    <span>Módulos Atualizados</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span>Melhorias Aplicadas</span>
+                </div>
             </div>
+            <p style="font-size: 1.2rem; margin-top: 30px;">
+                Todas as melhorias foram implementadas com sucesso, proporcionando melhor experiência do usuário e maior eficiência do sistema.
+            </p>
         </div>
     </div>
 
     <div class="navigation">
-        <button class="nav-btn" onclick="previousSlide()">← Anterior</button>
-        <button class="nav-btn" onclick="nextSlide()">Próximo →</button>
+        <button class="nav-btn" onclick="scrollToTop()">↑ Início</button>
+        <button class="nav-btn" onclick="scrollToBottom()">↓ Final</button>
     </div>
 
     <script>
-        let currentSlideIndex = 0;
-        const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
-        
-        document.getElementById('totalSlides').textContent = totalSlides;
-        
-        function showSlide(index) {
-            slides.forEach(slide => slide.classList.remove('active'));
-            slides[index].classList.add('active');
-            document.getElementById('currentSlide').textContent = index + 1;
+        // Atualizar barra de progresso
+        function updateProgressBar() {
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.body.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            document.getElementById('progressBar').style.width = scrollPercent + '%';
         }
-        
-        function nextSlide() {
-            currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
-            showSlide(currentSlideIndex);
+
+        // Funções de navegação
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
-        function previousSlide() {
-            currentSlideIndex = (currentSlideIndex - 1 + totalSlides) % totalSlides;
-            showSlide(currentSlideIndex);
+
+        function scrollToBottom() {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
-        
-        // Navegação por teclado
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'ArrowRight' || event.key === ' ') {
-                nextSlide();
-            } else if (event.key === 'ArrowLeft') {
-                previousSlide();
-            }
+
+        // Event listeners
+        window.addEventListener('scroll', updateProgressBar);
+
+        // Animação suave para cards ao passar o mouse
+        document.querySelectorAll('.ticket-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
         });
-        
-        // Navegação por clique
-        document.addEventListener('click', function(event) {
-            if (!event.target.classList.contains('nav-btn')) {
-                nextSlide();
-            }
-        });
+
+        // Inicializar barra de progresso
+        updateProgressBar();
     </script>
 </body>
 </html>
