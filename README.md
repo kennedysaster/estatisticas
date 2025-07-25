@@ -1,2 +1,0 @@
-# estatisticas
-Estatisticas Ticket
